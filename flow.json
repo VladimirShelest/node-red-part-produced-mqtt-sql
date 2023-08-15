@@ -1,1 +1,175 @@
-[]
+[
+    {
+        "id": "f6f189287141a6f9",
+        "type": "tab",
+        "label": "Part produced",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "5984263498fb979d",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "10.18.40.102",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "1",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "df8c0b88.91b0a8",
+        "type": "MSSQL-CN",
+        "name": "MQTT",
+        "server": "SPBMQTT",
+        "encyption": false,
+        "database": ""
+    },
+    {
+        "id": "429d20638e666a1f",
+        "type": "mqtt in",
+        "z": "f6f189287141a6f9",
+        "name": "",
+        "topic": "m/spb/kam/assembly/17901200/pwm/b02/part_produced/",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "5984263498fb979d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 270,
+        "y": 100,
+        "wires": [
+            [
+                "b41ee26a240d81e8",
+                "f2429e32775f9872"
+            ]
+        ]
+    },
+    {
+        "id": "54ce65b3bef7200f",
+        "type": "mqtt in",
+        "z": "f6f189287141a6f9",
+        "name": "",
+        "topic": "m/spb/kam/assembly/17901200/pwm/b02/historian/part_produced/",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "5984263498fb979d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 300,
+        "y": 220,
+        "wires": [
+            [
+                "4d6325f1f2ab3325"
+            ]
+        ]
+    },
+    {
+        "id": "b41ee26a240d81e8",
+        "type": "function",
+        "z": "f6f189287141a6f9",
+        "name": "Function",
+        "func": "// @ts-nocheck\nData = new Date();\nHour = Data.getHours();\n\nif (Hour >= 8 && Hour <= 16) \n{pld = \"UPDATE [PWM_Kamenka].[dbo].[PartCounterLiveTable] \"\npld = pld + \" SET Counter_01 = '\" + msg.payload.value[0] + \"', Counter_02 = '\" + msg.payload.value[1] + \"', Counter_03 = '\" + msg.payload.value[2] + \"', Counter_04 = '\" + msg.payload.value[3] + \"', Counter_05 = '\" + msg.payload.value[4] + \"', Counter_06 = '\" + msg.payload.value[5] + \"', Counter_07 = '\" + msg.payload.value[6] + \"', Counter_08 = '\" + msg.payload.value[7] + \"', Counter_09 = '\" + msg.payload.value[8] + \"', Counter_10 = '\" + msg.payload.value[9] + \"', Counter_11 = '\" + msg.payload.value[10] + \"', Counter_12 = '\" + msg.payload.value[11] + \"', Counter_13 = '\" + msg.payload.value[12] + \"', Counter_14 = '\" + msg.payload.value[13] + \"', Counter_15 = '\" + msg.payload.value[14] + \"', Counter_16 = '\" + msg.payload.value[15] + \"', Date_Time = CURRENT_TIMESTAMP \" \npld = pld + \" WHERE NameMachine = 'PWM_B02' \"\nmsg.payload = pld\nreturn msg;}\nelse { delete msg }\n\n\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 100,
+        "wires": [
+            [
+                "796fd4f474b81e1f",
+                "919a31101482d352"
+            ]
+        ]
+    },
+    {
+        "id": "796fd4f474b81e1f",
+        "type": "MSSQL",
+        "z": "f6f189287141a6f9",
+        "mssqlCN": "df8c0b88.91b0a8",
+        "name": "MSSQL",
+        "query": "",
+        "outField": "payload",
+        "x": 1000,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4d6325f1f2ab3325",
+        "type": "function",
+        "z": "f6f189287141a6f9",
+        "name": "Function",
+        "func": "// @ts-nocheck\nData = new Date();\nHour = Data.getHours();\n\nif (Hour >= 8 && Hour <= 16) {\npld =       \"INSERT INTO [PWM_Kamenka].[dbo].[PartCounterLog_PWM_B02] \"\npld = pld + \"(Date_Time, Counter_01, Counter_02, Counter_03, Counter_04, Counter_05, Counter_06, Counter_07, Counter_08, Counter_09, Counter_10, Counter_11, Counter_12, Counter_13, Counter_14, Counter_15, Counter_16) \"\npld = pld + \"VALUES ( CURRENT_TIMESTAMP,'\" + msg.payload.value[0] + \"', '\" + msg.payload.value[1] + \"', '\" + msg.payload.value[2] + \"', '\" + msg.payload.value[3] + \"', '\" + msg.payload.value[4] + \"', '\" + msg.payload.value[5] + \"', '\" + msg.payload.value[6] + \"', '\" + msg.payload.value[7] + \"', '\" + msg.payload.value[8] + \"', '\" + msg.payload.value[9] + \"', '\" + msg.payload.value[10] + \"', '\" + msg.payload.value[11] + \"', '\" + msg.payload.value[12] + \"', '\" + msg.payload.value[13] + \"', '\" + msg.payload.value[14] + \"', '\" + msg.payload.value[15] + \"')\"\nmsg.payload = pld\nreturn msg;}\nelse { delete msg }\n\n\n\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 220,
+        "wires": [
+            [
+                "796fd4f474b81e1f"
+            ]
+        ]
+    },
+    {
+        "id": "919a31101482d352",
+        "type": "debug",
+        "z": "f6f189287141a6f9",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1010,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "f2429e32775f9872",
+        "type": "debug",
+        "z": "f6f189287141a6f9",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 850,
+        "y": 340,
+        "wires": []
+    }
+]
